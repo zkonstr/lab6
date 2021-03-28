@@ -65,6 +65,7 @@ public class BouncingBall implements Runnable {
 // возвращено в метод
 // В противном случае - активный поток заснѐт
                 field.canMove(this);
+                field.canCharm(this);
                 if (x + speedX <= radius) {
 // Достигли левой стенки, отскакиваем право
                     speedX = -speedX;
@@ -93,7 +94,7 @@ public class BouncingBall implements Runnable {
 // исходя из скорости
 // Скорость = 1 (медленно), засыпаем на 15 мс.
 // Скорость = 15 (быстро), засыпаем на 1 мс.
-                Thread.sleep(16-speed);
+                Thread.sleep(MAX_SPEED - speed + 1);
             }
         } catch (InterruptedException ex) {
 // Если нас прервали, то ничего не делаем

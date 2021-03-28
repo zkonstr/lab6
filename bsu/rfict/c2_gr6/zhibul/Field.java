@@ -13,6 +13,7 @@ import javax.swing.Timer;
 public class Field extends JPanel {
     // Флаг приостановленности движения
     private boolean paused;
+    private boolean charm;
     // Динамический список скачущих мячей
     private final ArrayList<BouncingBall> balls = new ArrayList<>(10);
     // Класс таймер отвечает за регулярную генерацию событий ActionEvent
@@ -72,4 +73,19 @@ public class Field extends JPanel {
             wait();
         }
     }
+
+    public synchronized void canCharm(BouncingBall bouncingBall) {
+    }
+
+    public synchronized void enableCharm(){
+        changeCharm(true);
+    }
+    public synchronized void disableCharm(){
+        changeCharm(false);
+    }
+
+    public synchronized void changeCharm(boolean enabled){
+        this.charm = enabled;
+    }
+
 }

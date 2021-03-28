@@ -15,8 +15,10 @@ public class MainFrame extends JFrame {
 // не распахнуто на весь экран
     private static final int WIDTH = 700;
     private static final int HEIGHT = 500;
-    private JMenuItem pauseMenuItem;
-    private JMenuItem resumeMenuItem;
+    private final JMenuItem pauseMenuItem;
+    private final JMenuItem resumeMenuItem;
+    private final JMenuItem enableCharmMenuItem;
+    private final JMenuItem disableCharmMenuItem;
     // Поле, по которому прыгают мячи
     private Field field = new Field();
     // Конструктор главного окна приложения
@@ -36,11 +38,11 @@ public class MainFrame extends JFrame {
         Action addBallAction = new AbstractAction("Добавить мяч") {
             public void actionPerformed(ActionEvent event) {
                 field.addBall();
-                if (!pauseMenuItem.isEnabled() &&
-                        !resumeMenuItem.isEnabled()) {
+                if (!pauseMenuItem.isEnabled() && !resumeMenuItem.isEnabled()) {
 // Ни один из пунктов меню не являются
 // доступными - сделать доступным "Паузу"
                     pauseMenuItem.setEnabled(true);
+                    enableCharmMenuItem.setEnabled(true);
                 }
             }
         };
@@ -66,6 +68,28 @@ public class MainFrame extends JFrame {
         };
         resumeMenuItem = controlMenu.add(resumeAction);
         resumeMenuItem.setEnabled(false);
+
+        Action enableCharmAction = new AbstractAction("Включить очарование") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                field.enableCharm();
+                enableCharmMenuItem.setEnabled(false);
+                disableCharmMenuItem.setEnabled(true);
+            }
+        };
+        enableCharmMenuItem = controlMenu.add(enableCharmAction);
+        enableCharmMenuItem.setEnabled(false);
+        Action disableCharmAction = new AbstractAction("Выключить очарование") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                field.disableCharm();
+                enableCharmMenuItem.setEnabled(true);
+                disableCharmMenuItem.setEnabled(false);
+            }
+        };
+        disableCharmMenuItem = controlMenu.add(disableCharmAction);
+        disableCharmAction.setEnabled(false);
+
 // Добавить в центр граничной компоновки поле Field
         getContentPane().add(field, BorderLayout.CENTER);
     }
