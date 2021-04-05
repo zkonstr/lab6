@@ -1,8 +1,11 @@
 package rfict.c2_gr6.zhibul;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
+
 public class BouncingBall implements Runnable {
     // Максимальный радиус, который может иметь мяч
     private static final int MAX_RADIUS = 40;
@@ -20,6 +23,8 @@ public class BouncingBall implements Runnable {
     private int speed;
     private double speedX;
     private double speedY;
+    private double angle;
+
     // Конструктор класса BouncingBall
     public BouncingBall(Field field) {
 // Необходимо иметь ссылку на поле, по которому прыгает мяч,
@@ -27,46 +32,54 @@ public class BouncingBall implements Runnable {
 // через getWidth(), getHeight()
         this.field = field;
 // Радиус мяча случайного размера
-        radius = (int) (Math.random()*(MAX_RADIUS -
+        radius = (int) (Math.random() * (MAX_RADIUS -
                 MIN_RADIUS)) + MIN_RADIUS;
 // Абсолютное значение скорости зависит от диаметра мяча,
 // чем он больше, тем медленнее
-        speed = Math.round(5*MAX_SPEED / radius);
-        if (speed>MAX_SPEED) {
+        speed = Math.round(5 * MAX_SPEED / radius);
+        if (speed > MAX_SPEED) {
             speed = MAX_SPEED;
         }
 // Начальное направление скорости тоже случайно,
 // угол в пределах от 0 до 2PI
-        double angle = Math.random()*2*Math.PI;
+        setAngle(Math.random() * 2 * Math.PI);
 // Вычисляются горизонтальная и вертикальная компоненты скорости
-        speedX = 3*Math.cos(angle);
-        speedY = 3*Math.sin(angle);
 // Цвет мяча выбирается случайно
-        color = new Color((float)Math.random(), (float)Math.random(),
-                (float)Math.random());
+        color = new Color((float) Math.random(), (float) Math.random(),
+                (float) Math.random());
 // Начальное положение мяча случайно
-        x = Math.random()*(field.getSize().getWidth()-2*radius) + radius;
-        y = Math.random()*(field.getSize().getHeight()-2*radius) + radius;
+        x = Math.random() * (field.getSize().getWidth() - 2 * radius) + radius;
+        y = Math.random() * (field.getSize().getHeight() - 2 * radius) + radius;
 // Создаѐм новый экземпляр потока, передавая аргументом
 // ссылку на класс, реализующий Runnable (т.е. на себя)
         Thread thisThread = new Thread(this);
 // Запускаем поток
         thisThread.start();
     }
+
+    private void setAngle(double angle) {
+        this.angle = angle;
+        speedX = speed * Math.cos(angle);
+        speedY = speed * Math.sin(angle);
+    }
+
     // Метод run() исполняется внутри потока. Когда он завершает работу,
 // то завершается и поток
     public void run() {
         try {
 // Крутим бесконечный цикл, т.е. пока нас не прервут,
 // мы не намерены завершаться
-            while(true) {
+            while (true) {
 // Синхронизация потоков на самом объекте поля
 // Если движение разрешено - управление будет
 // возвращено в метод
 // В противном случае - активный поток заснѐт
                 field.canMove(this);
                 field.canCharm(this);
-                if (!field.isCharm()) {
+//                if (!field.isCharm()) {
+                    if (field.isCharm()){
+                        setAngle(calcAngle(new Point2D.Double(x, y), field.getMousePosition()));
+                    }
                     if (x + speedX <= radius) {
 // Достигли левой стенки, отскакиваем право
                         speedX = -speedX;
@@ -92,20 +105,40 @@ public class BouncingBall implements Runnable {
 // исходя из скорости
 // Скорость = 1 (медленно), засыпаем на 15 мс.
 // Скорость = 15 (быстро), засыпаем на 1 мс.
+     //           } else {
+       /*             var point = field.getMousePosition();
+                    if (point != null) {
+                        var newX = point.x;
+                        var newY = point.y;
+                        if (newX >= radius && newX <= field.getWidth() - radius) {
+                            x = newX;
+                        }
+                        if (newY >= radius && newY <= field.getHeight() - radius) {
+                            y = newY;
+                        }
+                    }
                 }
-                Thread.sleep(MAX_SPEED - speed + 1);
+       */         Thread.sleep(MAX_SPEED - speed + 1);
             }
         } catch (InterruptedException ex) {
 // Если нас прервали, то ничего не делаем
 // и просто выходим (завершаемся)
         }
     }
+
+    private double calcAngle(Point2D.Double point1, Point point2) {
+        if (point1 != null && point2 != null) {
+            return Math.atan((point2.x - point1.x) / (point2.y - point1.y));
+        }
+        return angle;
+    }
+
     // Метод прорисовки самого себя
     public void paint(Graphics2D canvas) {
         canvas.setColor(color);
         canvas.setPaint(color);
-        Ellipse2D.Double ball = new Ellipse2D.Double(x-radius, y-radius,
-                2*radius, 2*radius);
+        Ellipse2D.Double ball = new Ellipse2D.Double(x - radius, y - radius,
+                2 * radius, 2 * radius);
         canvas.draw(ball);
         canvas.fill(ball);
     }
