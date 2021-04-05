@@ -88,4 +88,7 @@ public class Field extends JPanel {
         this.charm = enabled;
     }
 
+    public boolean isCharm() {
+        return charm;
+    }
 }

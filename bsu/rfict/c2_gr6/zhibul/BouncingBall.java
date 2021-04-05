@@ -66,34 +66,33 @@ public class BouncingBall implements Runnable {
 // В противном случае - активный поток заснѐт
                 field.canMove(this);
                 field.canCharm(this);
-                if (x + speedX <= radius) {
+                if (!field.isCharm()) {
+                    if (x + speedX <= radius) {
 // Достигли левой стенки, отскакиваем право
-                    speedX = -speedX;
-                    x = radius;
-                } else
-                if (x + speedX >= field.getWidth() - radius) {
+                        speedX = -speedX;
+                        x = radius;
+                    } else if (x + speedX >= field.getWidth() - radius) {
 // Достигли правой стенки, отскок влево
-                    speedX = -speedX;
-                    x=field.getWidth()-radius;
-                } else
-                if (y + speedY <= radius) {
+                        speedX = -speedX;
+                        x = field.getWidth() - radius;
+                    } else if (y + speedY <= radius) {
 // Достигли верхней стенки
-                    speedY = -speedY;
-                    y = radius;
-                } else
-                if (y + speedY >= field.getHeight() - radius) {
+                        speedY = -speedY;
+                        y = radius;
+                    } else if (y + speedY >= field.getHeight() - radius) {
 // Достигли нижней стенки
-                    speedY = -speedY;
-                    y=Math.floor(field.getHeight()-radius);
-                } else {
+                        speedY = -speedY;
+                        y = Math.floor(field.getHeight() - radius);
+                    } else {
 // Просто смещаемся
-                    x += speedX;
-                    y += speedY;
-                }
+                        x += speedX;
+                        y += speedY;
+                    }
 // Засыпаем на X миллисекунд, где X определяется
 // исходя из скорости
 // Скорость = 1 (медленно), засыпаем на 15 мс.
 // Скорость = 15 (быстро), засыпаем на 1 мс.
+                }
                 Thread.sleep(MAX_SPEED - speed + 1);
             }
         } catch (InterruptedException ex) {
