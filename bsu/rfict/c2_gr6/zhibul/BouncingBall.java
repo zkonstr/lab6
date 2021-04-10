@@ -105,20 +105,7 @@ public class BouncingBall implements Runnable {
 // исходя из скорости
 // Скорость = 1 (медленно), засыпаем на 15 мс.
 // Скорость = 15 (быстро), засыпаем на 1 мс.
-     //           } else {
-       /*             var point = field.getMousePosition();
-                    if (point != null) {
-                        var newX = point.x;
-                        var newY = point.y;
-                        if (newX >= radius && newX <= field.getWidth() - radius) {
-                            x = newX;
-                        }
-                        if (newY >= radius && newY <= field.getHeight() - radius) {
-                            y = newY;
-                        }
-                    }
-                }
-       */         Thread.sleep(MAX_SPEED - speed + 1);
+              Thread.sleep(MAX_SPEED - speed + 1);
             }
         } catch (InterruptedException ex) {
 // Если нас прервали, то ничего не делаем
@@ -128,7 +115,19 @@ public class BouncingBall implements Runnable {
 
     private double calcAngle(Point2D.Double point1, Point point2) {
         if (point1 != null && point2 != null) {
-            return Math.atan((point2.x - point1.x) / (point2.y - point1.y));
+            if(point2.y==point1.y)
+                return Math.PI/2;
+            if(point2.x==point1.x)
+                return 0;
+            if(point2.y>point1.y && point2.x<point1.x)
+                return - Math.PI + Math.atan( (point2.y - point1.y)/(point2.x - point1.x) );//1+
+            if(point2.y>point1.y && point2.x>point1.x)
+                return Math.atan( (point2.y - point1.y)/(point2.x - point1.x) );//2+
+            if(point2.y<point1.y && point2.x>point1.x)
+                return Math.atan( (point2.y - point1.y)/(point2.x - point1.x) );//3+
+            if(point2.y<point1.y && point2.x<point1.x)
+                return - Math.PI + Math.atan( (point2.y - point1.y)/(point2.x - point1.x) );//4+
+
         }
         return angle;
     }
